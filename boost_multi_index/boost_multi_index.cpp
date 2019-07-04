@@ -190,6 +190,21 @@ int main(int argc, char* argv[])
 		beginit = names.erase(beginit);
 	}
 	copy(names.begin(), names.end(), ostream_iterator<boost::shared_ptr<Book> >(cout));
+	cout << "????????????????????"<<endl;
+	con.insert(boost::make_shared<Book>(7, 2011, "math book", "jim"));
+	con.insert(boost::make_shared<Book>(8, 2011, "math book", "jim"));
+	
+	auto beginit2 = names.lower_bound("math book");
+	auto endit2 = names.upper_bound("math book");
+	for( ; beginit2 != names.end()&& beginit2 != endit2; beginit2++){
+		cout << "...................." <<endl;
+		cout << *beginit2;
+		auto &newname = "english book";
+		names.modify(beginit2, [&](boost::shared_ptr<Book> & bookptr)->void{
+			bookptr->name = newname;
+		});
+	}
+	copy(names.begin(), names.end(), ostream_iterator<boost::shared_ptr<Book> >(cout));
 	getchar();
 	return 0;
 }
