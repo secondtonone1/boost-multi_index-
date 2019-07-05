@@ -194,6 +194,8 @@ int main(int argc, char* argv[])
 	con.insert(boost::make_shared<Book>(7, 2011, "math book", "jim"));
 	con.insert(boost::make_shared<Book>(8, 2011, "math book", "jim"));
 	
+	//循环修改会出现问题,因为每次modify后names序列都会重新排序，迭代器会失效
+	//将数值改小，不会影响遍历
 	auto beginit2 = names.lower_bound("math book");
 	auto endit2 = names.upper_bound("math book");
 	for( ; beginit2 != names.end()&& beginit2 != endit2; beginit2++){
@@ -205,6 +207,21 @@ int main(int argc, char* argv[])
 		});
 	}
 	copy(names.begin(), names.end(), ostream_iterator<boost::shared_ptr<Book> >(cout));
+
+	//循环修改会出现问题，将数值改大，会导致迭代器指向的位置偏后，错过其他的修改。
+	//下边的代码只会修改一次。
+	auto beginit3 = names.lower_bound("english book");
+	auto endit3 = names.upper_bound("english book");
+	for( ; beginit3 != names.end()&& beginit3 != endit2; beginit3++){
+		cout << "...................." <<endl;
+		cout << *beginit3;
+		auto &newname = "math book";
+		names.modify(beginit3, [&](boost::shared_ptr<Book> & bookptr)->void{
+			bookptr->name = newname;
+		});
+	}
+	copy(names.begin(), names.end(), ostream_iterator<boost::shared_ptr<Book> >(cout));
+
 	getchar();
 	return 0;
 }
